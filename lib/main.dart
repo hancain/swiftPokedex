@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/apiFiles/api_helper.dart';
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pokedex',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -27,53 +29,93 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget{
-  const MyHomePage({Key? key, required String title}) : super(key: key);
-  
+class MyHomePage extends StatefulWidget {
+  @override
+  MyHomePageState createState() => new MyHomePageState();
+}
+class MyHomePageState extends State<MyHomePage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          FutureBuilder<List<Pokemon>>(
-            future: getAllPokemon(),
-            builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return const Text("Error :(");
-            }
-            return Text(
-                snapshot.data!.map((pokemon) => pokemon.name).toList().toString());
-          }
-          else {
-            return const CircularProgressIndicator();
-          }
-            }),
-          FutureBuilder<Pokemon>(
-              future: getPokemon("872"),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done){
-                  if (snapshot.hasError){
-                    return const Text("Error :(");
-                  }
-                  return Image(
-                      image: NetworkImage(snapshot.data!.sprite.front)
-                  );
-                }
-                else {
-                  return const CircularProgressIndicator();
-                }
-                }
-    ),
-        ]
-      ),
+        appBar: AppBar(),
+        body: pokemonListBuild(),
     );
   }
-  
-}
+  Widget pokemonListBuild() {
+    return FutureBuilder<List<Pokemon>>(
+        future: getAllPokemon(),
+
+        builder: (BuildContext context, snapshot) {
+          return ListView.builder(
+            itemCount: 151,
+            itemBuilder: (context, index){
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return const Text("Error :(");
+                }
+                return _buildRow(
+                    snapshot.data![index]
+                );
+              }
+              else {
+                return const CircularProgressIndicator();
+              }
+            }
+
+
+          );
+        }
+      //       FutureBuilder<List<Pokemon>>(
+      //         future: getAllPokemon(),
+      //         builder: (context, snapshot) {
+      //       if (snapshot.connectionState == ConnectionState.done) {
+      //         if (snapshot.hasError) {
+      //           return const Text("Error :(");
+      //         }
+      //         return Text(
+      //             snapshot.data!.map((pokemon) => pokemon.name).toList().toString());
+      //       }
+      //       else {
+      //         return const CircularProgressIndicator();
+      //       }
+      //         }),
+      //       FutureBuilder<Pokemon>(
+      //           future: getPokemon("872"),
+      //           builder: (context, snapshot) {
+      //             if (snapshot.connectionState == ConnectionState.done){
+      //               if (snapshot.hasError){
+      //                 return const Text("Error :(");
+      //               }
+      //               return Image(
+      //                   image: NetworkImage(snapshot.data!.sprite.front)
+      //               );
+      //             }
+      //             else {
+      //               return const CircularProgressIndicator();
+      //             }
+      //             }
+      // ),
+      //    ]
+      //);
+    );
+  }
+      Widget _buildRow(Pokemon index) {
+        return ListTile(
+          leading: Image(
+            image: NetworkImage(index.sprite.front)
+          ),
+          title: Text(
+            index.id.toString()
+          ),
+          subtitle: Text(
+            index.name
+          ),
+
+        );
+      }
+    }
