@@ -11,27 +11,27 @@ List<Pokemon> allPokemonFromJson(String str) {
 }
 
 class Pokemon {
-    int id;
+    int dexNum;
     String name;
     Sprite sprite;
     //List<Type> types;
 
     Pokemon({
-        required this.id,
+        required this.dexNum,
         required this.name,
         required this.sprite,
         //required this.types,
     });
 
     factory Pokemon.fromJson(Map<String, dynamic> json) => Pokemon(
-        id: json["id"],
+        dexNum: json["id"],
         name: json["name"],
         sprite: Sprite.fromJson(json["sprites"]),
         //types: json["types"].map((type) => Type.fromJson(json["type"])).toList()
     );
 
     Map<String, dynamic> toJson() => {
-        "id": id,
+        "id": dexNum,
         "name": name,
         "sprite": sprite,
         //"types": types

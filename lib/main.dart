@@ -39,13 +39,55 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 class MyHomePageState extends State<MyHomePage>{
+  Icon searchIcon = const Icon(Icons.search); //creates an icon that looks like magnifying glass
+  Widget searchBar = const Text("Pokedex");
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar( //searchbar stuff begins here --------------------------
+            title: searchBar,
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              onPressed: () {setState(() {
+                if (searchIcon.icon == Icons.search) {
+                  searchIcon = const Icon(Icons.cancel);
+                  searchBar = const ListTile(
+                    leading: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    title: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'type in monster name...',
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  );
+                } else {
+                  searchIcon = const Icon(Icons.search);
+                  searchBar = const Text('Pokedex');
+                }
+              });},
+              icon: searchIcon,
+            )
+          ],
+          centerTitle: true,
+        ),    //searchbar stuff ends here ---------------------------
         body: pokemonListBuild(),
     );
   }
+
   Widget pokemonListBuild() {
     return FutureBuilder<List<Pokemon>>(
         future: getAllPokemon(),
@@ -113,7 +155,7 @@ class MyHomePageState extends State<MyHomePage>{
             image: NetworkImage(index.sprite.front)
           ),
           title: Text(
-              index.id.toString()
+              index.dexNum.toString()
           ),
           subtitle: Text(
             s//index.name
