@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pokedex/apiFiles/api_helper.dart';
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   @override
-  MyHomePageState createState() => new MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 class MyHomePageState extends State<MyHomePage>{
   @override
@@ -104,18 +104,22 @@ class MyHomePageState extends State<MyHomePage>{
       //);
     );
   }
+
       Widget _buildRow(Pokemon index) {
+      String s = index.name;
+      s = s[0].toUpperCase() + s.substring(1);
         return ListTile(
           leading: Image(
             image: NetworkImage(index.sprite.front)
           ),
           title: Text(
-            index.id.toString()
+              index.id.toString()
           ),
           subtitle: Text(
-            index.name
+            s//index.name
           ),
 
         );
       }
+
     }
