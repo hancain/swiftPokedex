@@ -1,7 +1,4 @@
-import 'dart:async';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:pokedex/apiFiles/api_helper.dart';
 import 'package:pokedex/apiFiles/pokemon_object.dart';
 
@@ -29,38 +26,58 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
   @override
   MyHomePageState createState() => MyHomePageState();
 }
-class MyHomePageState extends State<MyHomePage>{
-  Icon searchIcon = const Icon(Icons.search); //creates an icon that looks like magnifying glass
+class MyHomePageState extends State<MyHomePage> {
+  late TextEditingController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Icon searchIcon = const Icon(
+      Icons.search); //creates an icon that looks like magnifying glass
   Widget searchBar = const Text("Pokedex");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar( //searchbar stuff begins here --------------------------
-            title: searchBar,
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {setState(() {
+      appBar: AppBar( //searchbar stuff begins here --------------------------
+        title: searchBar,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
                 if (searchIcon.icon == Icons.search) {
                   searchIcon = const Icon(Icons.cancel);
-                  searchBar = const ListTile(
-                    leading: Icon(
+                  searchBar = ListTile(
+                    //try making this an icon button and attach onPress search operation
+                    leading: const Icon(
                       Icons.search,
                       color: Colors.white,
                       size: 28,
                     ),
+                    //leading: const Icon(Icons.search, color: Colors.white, size: 28),
                     title: TextField(
-                      decoration: InputDecoration(
+                      controller: _controller,
+                      decoration: const InputDecoration(
                         hintText: 'type in monster name...',
                         hintStyle: TextStyle(
                           color: Colors.white,
@@ -69,7 +86,24 @@ class MyHomePageState extends State<MyHomePage>{
                         ),
                         border: InputBorder.none,
                       ),
-                      style: TextStyle(
+                      onSubmitted: (String value) async {
+                        await showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            title: const Text('Results: '),
+                            content: _getSearch(value),
+                              actions: <Widget>[
+                                TextButton(
+                                onPressed: () {
+                                Navigator.pop(context);
+                                },
+                                child: const Text('OK'),
+                          ),
+                          ],);
+                        });
+                      },
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
@@ -78,38 +112,36 @@ class MyHomePageState extends State<MyHomePage>{
                   searchIcon = const Icon(Icons.search);
                   searchBar = const Text('Pokedex');
                 }
-              });},
-              icon: searchIcon,
-            )
-          ],
-          centerTitle: true,
-        ),    //searchbar stuff ends here ---------------------------
-        body: pokemonListBuild(),
+              });
+            },
+            icon: searchIcon,
+          )
+        ],
+        centerTitle: true,
+      ), //searchbar stuff ends here ---------------------------
+      body: pokemonListBuild(),
     );
   }
 
   Widget pokemonListBuild() {
     return FutureBuilder<List<Pokemon>>(
         future: getAllPokemon(),
-
         builder: (BuildContext context, snapshot) {
           return ListView.builder(
-            itemCount: 151,
-            itemBuilder: (context, index){
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return const Text("Error :(");
+              itemCount: 151,
+              itemBuilder: (context, index) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return const Text("Error :(");
+                  }
+                  return _buildRow(
+                      snapshot.data![index]
+                  );
                 }
-                return _buildRow(
-                    snapshot.data![index]
-                );
+                else {
+                  return const CircularProgressIndicator();
+                }
               }
-              else {
-                return const CircularProgressIndicator();
-              }
-            }
-
-
           );
         }
       //       FutureBuilder<List<Pokemon>>(
@@ -147,21 +179,41 @@ class MyHomePageState extends State<MyHomePage>{
     );
   }
 
-      Widget _buildRow(Pokemon index) {
-      String s = index.name;
-      s = s[0].toUpperCase() + s.substring(1);
-        return ListTile(
-          leading: Image(
-            image: NetworkImage(index.sprite.front)
-          ),
-          title: Text(
-              index.dexNum.toString()
-          ),
-          subtitle: Text(
-            s//index.name
-          ),
+  Widget _getSearch(String name){
+    return FutureBuilder<Pokemon>(
+        future: getPokemonByName(name),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done){
+            if (snapshot.hasError){
+              return const Text("Error :(");
+            }
+            if(snapshot.data != null) {
+              return _buildRow(snapshot.data!);
+            }
+            return const Text("Error :(");
+          }
+          else {
+            return const CircularProgressIndicator();
+          }
+        });
+  }
 
-        );
-      }
+  Widget _buildRow(Pokemon index) {
+    String s = index.name;
+    s = s[0].toUpperCase() + s.substring(1);
+    return ListTile(
+      leading: Image(
+          image: NetworkImage(index.sprite.front)
+      ),
+      title: Text(
+          index.dexNum.toString()
+      ),
+      subtitle: Text(
+          s //index.name
+      ),
 
-    }
+    );
+  }
+
+
+}
