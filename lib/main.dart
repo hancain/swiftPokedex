@@ -1,6 +1,11 @@
+import 'dart:html';
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:pokedex/apiFiles/api_helper.dart';
 import 'package:pokedex/apiFiles/pokemon_object.dart';
+import 'package:pokedex/detailPokemon.dart' as Path;
+import 'package:pokedex/detailPokemonDataModel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -144,38 +149,6 @@ class MyHomePageState extends State<MyHomePage> {
               }
           );
         }
-      //       FutureBuilder<List<Pokemon>>(
-      //         future: getAllPokemon(),
-      //         builder: (context, snapshot) {
-      //       if (snapshot.connectionState == ConnectionState.done) {
-      //         if (snapshot.hasError) {
-      //           return const Text("Error :(");
-      //         }
-      //         return Text(
-      //             snapshot.data!.map((pokemon) => pokemon.name).toList().toString());
-      //       }
-      //       else {
-      //         return const CircularProgressIndicator();
-      //       }
-      //         }),
-      //       FutureBuilder<Pokemon>(
-      //           future: getPokemon("872"),
-      //           builder: (context, snapshot) {
-      //             if (snapshot.connectionState == ConnectionState.done){
-      //               if (snapshot.hasError){
-      //                 return const Text("Error :(");
-      //               }
-      //               return Image(
-      //                   image: NetworkImage(snapshot.data!.sprite.front)
-      //               );
-      //             }
-      //             else {
-      //               return const CircularProgressIndicator();
-      //             }
-      //             }
-      // ),
-      //    ]
-      //);
     );
   }
 
@@ -197,9 +170,9 @@ class MyHomePageState extends State<MyHomePage> {
           }
         });
   }
-
   Widget _buildRow(Pokemon index) {
     String s = index.name;
+    detailPokemonDataModel datas = detailPokemonDataModel(index.name, index.sprite.front, index.dexNum.toString());
     s = s[0].toUpperCase() + s.substring(1);
     return ListTile(
       leading: Image(
@@ -211,9 +184,9 @@ class MyHomePageState extends State<MyHomePage> {
       subtitle: Text(
           s //index.name
       ),
-
+      onTap: () => (
+        Navigator.push(this.context, MaterialPageRoute(builder: (context) => Path.detailPokemon(data: datas)))
+      ),
     );
   }
-
-
 }
