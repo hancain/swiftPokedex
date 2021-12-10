@@ -1,5 +1,5 @@
-import 'dart:html';
-import 'dart:js';
+//import 'dart:html';
+//import 'dart:js';
 
 import 'package:flutter/material.dart';
 import 'package:pokedex/apiFiles/api_helper.dart';
@@ -175,11 +175,15 @@ class MyHomePageState extends State<MyHomePage> {
     detailPokemonDataModel datas = detailPokemonDataModel(index.name, index.sprite.front, index.dexNum.toString());
     s = s[0].toUpperCase() + s.substring(1);
     return ListTile(
-      leading: Image(
+      //minVerticalPadding: 50,
+
+      leading:
+        Image(
           image: NetworkImage(index.sprite.front)
       ),
       title: Text(
           index.dexNum.toString()
+
       ),
       subtitle: Text(
           s //index.name

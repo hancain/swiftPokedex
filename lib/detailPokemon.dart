@@ -10,21 +10,26 @@ class detailPokemon extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(this.data.name.toUpperCase() + "'S DETIALS"),),
-      body: Column(
-        children: [
-            Text(
-                data.id
+      appBar: AppBar(title: Text(this.data.name.toUpperCase() + "'S DETAILS"),),
+      body: Center( //column
+       // heightFactor: 20,
+        child: Container (//children: [
+            child: Column(
+            children: [Image(
+                image: NetworkImage(data.image),
+                width: 400,
+                height: 400,
+                fit: BoxFit.fill
             ),
-            Image(
-                image: NetworkImage(data.image)
-            ),
             Text(
-              data.name, style: TextStyle(fontWeight: FontWeight.bold)
+              data.id, style: TextStyle(fontSize: 45, fontFamily: 'Courier New')
+          ),
+            Text(
+              data.name[0].toUpperCase() + data.name.substring(1), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, fontFamily: 'Courier New') //here
             ),
           ],
-        ),
-      );
+        )),
+      ));
     throw UnimplementedError();
   }
   }
